@@ -1,0 +1,3 @@
+<!-- src/app/components/team-uploader/team-uploader.component.html -->
+<input type="file" (change)="onFile($event)" accept="image/*" />
+<button (click)="upload()" [disabled]="!selected">Analyze</button>

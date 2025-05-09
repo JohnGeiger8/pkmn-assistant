@@ -1,0 +1,3 @@
+Flask==2.2.5
+# …your other deps…
+gunicorn==20.1.0
