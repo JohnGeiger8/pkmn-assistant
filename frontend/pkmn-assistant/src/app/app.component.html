@@ -227,6 +227,10 @@
       </svg>
       <h1>Hello, {{ title }}</h1>
       <p>Congratulations! Your app is running. 🎉</p>
+      <div class="api-status" aria-live="polite">
+        <p><strong>API status:</strong> {{ apiStatus }}</p>
+        <p *ngIf="errorMessage"><strong>Error:</strong> {{ errorMessage }}</p>
+      </div>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">

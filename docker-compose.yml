@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  backend:
+    image: python:3.14-rc-slim
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    command: >
+      bash -c "pip install --upgrade pip && pip install -r requirements.txt && python wsgi.py"
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend/pkmn-assistant:/app
+    command: >
+      sh -c "npm install && npm run start -- --host 0.0.0.0 --port 4200 --proxy-config proxy.conf.docker.json"
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
