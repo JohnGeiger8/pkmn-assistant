@@ -27,10 +27,10 @@
 
 ## Interface Contracts
 - Sessions: `POST /api/sessions`, `GET /api/sessions/{id}`
-- Uploads: `POST /api/sessions/{id}/images` (multipart)
+- Save Uploads: `POST /api/sessions/{id}/save` (multipart)
 - Recommendation: `POST /api/sessions/{id}/recommendation`
 
 ## Data Requirements
-- Acceptance dataset `acceptance_v1` for Top-3 accuracy gating.
-- Supported image formats: PNG, JPG, JPEG, HEIC (if browser-supported).
+- Known-good save fixtures for parsing validation.
+- Supported save formats: `.sav`, `.dsv`.
 - Processing constraints: ≤5 seconds end-to-end under nominal load.

@@ -1,8 +1,8 @@
 # Progress
 
 ## Current Status
-- Memory bank initialization in progress.
-- Milestone 1 scope defined (manual entry walking skeleton).
+- Memory bank updated for save-file parsing direction.
+- Milestone 1 scope defined (save import + basic team builder).
 - Backend Flask scaffold created with health endpoint and local setup steps.
 - Docker compose runs frontend + backend with a single command.
 - Angular dev server proxy configured for backend API calls.
@@ -20,8 +20,8 @@
 - Docker compose wiring supports `/api` proxy via `proxy.conf.docker.json`.
 
 ## What's Left to Build
-- Implement Milestone 1 backend APIs (sessions, uploads, recommendation).
-- Implement frontend upload, manual picker, and results UI.
+- Implement Milestone 1 backend APIs (sessions, save upload, parsing, recommendation).
+- Implement frontend save upload, inventory review, and results UI.
 - Add CI for frontend/backend and E2E test.
 - Plan for ML identification and acceptance dataset gating.
 

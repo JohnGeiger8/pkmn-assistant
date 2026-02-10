@@ -1,17 +1,22 @@
 # Software Requirements Specification (SRS)
 
-**Project:** Generation 3 Pokémon PC Screenshot Team Assistant (MVP)  
+**Project:** Generation 3 Pokémon AI Team Assistant (MVP)  
 **Document Type:** NASA-Style Level-3 Software Requirements  
-**Revision:** 1.0  
+**Revision:** 2.0  
 **Status:** Approved for Implementation  
 
 ---
 
 ## 1. Purpose
 
-The purpose of this system is to assist players of Generation 3 Pokémon games in building a balanced in-game team by automatically identifying Pokémon available in the player’s PC storage using uploaded images and generating a recommended team using in-game logic.
+The purpose of this system is to assist players of Generation 3 Pokémon games in building a balanced in-game team by ingesting authoritative player data and generating an intelligent team recommendation using game-specific logic.
 
-The system prioritizes low-friction user experience, minimal manual input, and high identification reliability over competitive optimization.
+The MVP SHALL use **save file import** as the primary data source in order to:
+- maximize correctness and completeness of Pokémon data
+- eliminate manual data entry
+- reduce early technical risk
+
+The system architecture SHALL explicitly support future **machine-learning–based perception and recommendation capabilities**, including screenshot-based computer vision and ML-driven team optimization.
 
 ---
 
@@ -20,16 +25,20 @@ The system prioritizes low-friction user experience, minimal manual input, and h
 ### 2.1 Primary Objective
 
 The system SHALL allow a user to:
-1. Upload one or more images of Pokémon PC boxes  
-2. Automatically identify all Pokémon present  
-3. Generate a balanced six-Pokémon team using only identified Pokémon  
+1. Upload a supported Generation 3 Pokémon save file  
+2. Automatically extract all owned Pokémon from the save  
+3. Generate a balanced six-Pokémon team using only extracted Pokémon  
+4. Receive a simple explanation of the recommendation  
+
+---
 
 ### 2.2 Success Criteria
 
 The MVP SHALL be considered successful if:
-- Pokémon identification achieves ≥95% Top-3 accuracy on Gen 3 PC sprites  
-- Users can complete the flow without manually entering Pokémon names  
+- Users can complete the full flow without manually entering Pokémon data  
+- Pokémon extraction from save files is accurate and complete  
 - A valid team recommendation is produced within performance constraints  
+- The system architecture supports future ML-driven extensions without refactor  
 
 ---
 
@@ -44,12 +53,14 @@ The system SHALL support the following Generation 3 games:
 - Pokémon FireRed  
 - Pokémon LeafGreen  
 
+---
+
 ### 3.2 Assumptions
 
 - Games are unmodified retail versions  
-- English-language UI  
-- Standard PC box layouts  
-- No ROM hacks or custom sprite replacements  
+- English-language save formats  
+- Standard save structures  
+- No ROM hacks in MVP  
 
 ---
 
@@ -60,109 +71,85 @@ The system SHALL support the following Generation 3 games:
 The system SHALL consist of:
 - A web-based client supporting desktop and mobile browsers  
 - A server-side backend providing:
-  - Image processing  
-  - Pokémon identification (ML-based)  
+  - Save file ingestion and parsing  
+  - Pokémon inventory extraction  
   - Team recommendation logic  
+  - (Future) ML-based perception and recommendation services  
 
-### 4.2 Operational Flow
+---
 
-1. User uploads one or more PC images  
-2. System detects and extracts Pokémon slots  
-3. System identifies Pokémon species per slot  
-4. User optionally corrects identifications  
+### 4.2 Operational Flow (MVP)
+
+1. User uploads a save file  
+2. System parses the save file  
+3. System extracts all owned Pokémon  
+4. User reviews and optionally excludes Pokémon  
 5. System generates a single recommended team  
-6. System explains the recommendation at a high level  
+6. System explains the recommendation  
 
 ---
 
 ## 5. Functional Requirements
 
-### 5.1 Image Input & Session Management
+### 5.1 Session Management
 
-**REQ-IMG-001**  
-The system SHALL accept multiple image uploads within a single user session.
+**REQ-SES-001**  
+The system SHALL create an anonymous session representing a single team-building workspace.
 
-**REQ-IMG-002**  
-The system SHALL treat all uploaded images in a session as a single combined Pokémon pool.
+**REQ-SES-002**  
+All uploaded artifacts and derived data SHALL be associated with a session.
 
-**REQ-IMG-003**  
-Supported image types SHALL include:
-- PNG  
-- JPG  
-- JPEG  
-- HEIC (if browser-supported)  
-
-**REQ-IMG-004**  
-The system SHALL support:
-- Direct game screenshots  
-- Phone photos of screens  
-
-**REQ-IMG-005**  
-The system SHALL normalize orientation and scale prior to analysis.
+**REQ-SES-003**  
+Sessions SHALL expire automatically after a configurable TTL.
 
 ---
 
-### 5.2 PC Layout Detection & Slot Extraction
+### 5.2 Save File Input
 
-**REQ-PC-001**  
-The system SHALL detect Pokémon PC grid layouts automatically.
+**REQ-SAVE-001**  
+The system SHALL accept Generation 3 Pokémon save files.
 
-**REQ-PC-002**  
-The system SHALL identify:
-- Occupied slots  
-- Empty slots  
+**REQ-SAVE-002**  
+Supported save formats SHALL include:
+- `.sav`
+- `.dsv`
 
-**REQ-PC-003**  
-The system SHALL extract individual Pokémon icon sprites from occupied slots.
-
-**REQ-PC-004**  
-The system SHALL tolerate UI artifacts including:
-- Cursor overlays  
-- Selection highlights  
-- Minor motion blur  
+**REQ-SAVE-003**  
+The system SHALL validate save file integrity prior to parsing.
 
 ---
 
-### 5.3 Pokémon Identification
+### 5.3 Save Parsing & Pokémon Extraction
 
-**REQ-ID-001**  
-The system SHALL identify Pokémon species from Generation 3 PC icon sprites.
+**REQ-PARSE-001**  
+The system SHALL extract all Pokémon present in:
+- Player party
+- PC storage
 
-**REQ-ID-002**  
-The system SHALL output the Top-3 most likely Pokémon species per slot with confidence scores.
+**REQ-PARSE-002**  
+For each Pokémon, the system SHALL extract at minimum:
+- Species
+- Level
+- Primary and secondary types
 
-**REQ-ID-003**  
-The system SHALL achieve ≥95% Top-3 identification accuracy on validation data representative of real PC screenshots.
+**REQ-PARSE-003**  
+The system MAY extract additional data (e.g., moves, held items) if readily available.
 
-**REQ-ID-004**  
-Eggs SHALL be ignored and SHALL NOT be identified or included in downstream processing.
+**REQ-PARSE-004**  
+Egg Pokémon MAY be excluded from extraction.
 
-**REQ-ID-005**  
-Shiny Pokémon SHALL be treated as their normal species equivalents.
+---
 
-**REQ-ID-006**  
-All Unown forms SHALL be identified as a single “Unown” species.
+### 5.4 Pokémon Inventory Review
 
-**REQ-ID-007**  
+**REQ-INV-001**  
+The system SHALL present all extracted Pokémon to the user.
+
+**REQ-INV-002**  
+The user SHALL be able to exclude Pokémon from eligibility.
+
+**REQ-INV-003**  
 Duplicate Pokémon SHALL be allowed and treated as separate instances.
-
----
-
-### 5.4 User Confirmation & Correction
-
-**REQ-UC-001**  
-The system SHALL present identified Pokémon to the user for confirmation prior to team generation.
-
-**REQ-UC-002**  
-User correction of misidentified Pokémon SHALL be optional.
-
-**REQ-UC-003**  
-The system SHALL NOT proceed to team recommendation until all identified Pokémon are either:
-- Accepted  
-- Corrected by the user  
-
-**REQ-UC-004**  
-User corrections MAY be logged for future model improvement.
 
 ---
 
@@ -177,19 +164,18 @@ The team SHALL contain:
 - Fewer than 6 if the user owns fewer than 6 Pokémon  
 
 **REQ-TEAM-003**  
-Only Pokémon confirmed in the current session SHALL be eligible.
+Only Pokémon marked as eligible SHALL be considered.
 
 **REQ-TEAM-004**  
 Team selection SHALL consider Generation 3 mechanics, including:
 - Type coverage  
 - Physical vs special attack split (type-based)  
 - Defensive balance  
-- Status utility potential  
 
 **REQ-TEAM-005**  
-The system SHALL NOT assume access to:
+The system SHALL NOT assume:
 - Competitive movesets  
-- IVs or EVs  
+- IV or EV optimization  
 - Breeding or trading  
 
 ---
@@ -202,7 +188,7 @@ The system SHALL provide a simple explanation of the selected team.
 **REQ-EXP-002**  
 The explanation SHALL include:
 - Type coverage summary  
-- Offensive/defensive balance rationale  
+- Balance rationale  
 
 ---
 
@@ -213,81 +199,74 @@ The explanation SHALL include:
 **REQ-PERF-001**  
 End-to-end processing time SHALL NOT exceed 5 seconds under nominal load.
 
-**REQ-PERF-002**  
-Identification SHALL be resilient to moderate image quality degradation.
-
 ---
 
 ### 6.2 Reliability
 
 **REQ-REL-001**  
-Partial failures (e.g., one image failing to parse) SHALL NOT invalidate the entire session.
-
-**REQ-REL-002**  
-The system SHALL fail gracefully and prompt user action when confidence thresholds are not met.
+Malformed or unsupported save files SHALL result in graceful failure with user feedback.
 
 ---
 
 ### 6.3 Privacy & Data Handling
 
 **REQ-PRIV-001**  
-Uploaded images SHALL NOT be permanently stored beyond session scope.
+Uploaded save files SHALL NOT be permanently stored beyond session scope.
 
 **REQ-PRIV-002**  
-No personally identifiable information SHALL be required.
+No user authentication or personally identifiable information SHALL be required.
 
 ---
 
-## 7. Machine Learning System Requirements
+## 7. Machine Learning System Requirements (Future Scope)
 
 **REQ-ML-001**  
-The identification system SHALL use an embedding-based or retrieval-based approach rather than a fixed closed-set classifier.
+The system architecture SHALL support ML-driven perception components, including screenshot-based Pokémon identification.
 
 **REQ-ML-002**  
-The system SHALL maintain a Generation 3 sprite reference gallery.
+The system architecture SHALL support ML-driven recommendation components beyond rule-based logic.
 
 **REQ-ML-003**  
-Synthetic training data SHALL be used to approximate real PC screenshot conditions.
+ML components SHALL run server-side.
 
 **REQ-ML-004**  
-The ML model SHALL run exclusively server-side.
+ML components SHALL be evaluated using explicit acceptance datasets and CI gating.
 
 ---
 
-## 8. Constraints & Explicit Non-Goals
+## 8. Constraints & Explicit Non-Goals (MVP)
 
 The system SHALL NOT:
-- Parse save files  
-- Infer player progression  
+- Perform damage calculations  
+- Simulate trainer battles  
 - Optimize competitive strategies  
-- Recommend held items or EV spreads  
-- Support non-Gen-3 games in MVP  
+- Support non-Gen-3 games  
+- Require user accounts  
 
 ---
 
 ## 9. Failure Modes & Edge Cases
 
 The system SHALL handle:
-- Partial PC pages  
-- Repeated Pokémon across multiple images  
-- Blurry or compressed phone photos  
-- Mixed game screenshots within one session (treated uniformly)  
+- Partial save corruption  
+- Duplicate Pokémon  
+- Saves with fewer than six Pokémon  
 
 ---
 
 ## 10. Verification & Validation
 
 Each requirement SHALL be verifiable via:
-- Synthetic PC box image tests  
-- Real screenshot test sets  
-- Manual validation against known Pokémon inventories  
+- Save parsing unit tests  
+- Known-good save fixtures  
+- End-to-end flow tests  
 
 ---
 
 ## 11. MVP Exit Criteria
 
 The MVP SHALL be considered complete when:
-- ≥95% Top-3 identification accuracy is achieved  
-- Users can upload multiple PC pages per session  
-- A valid team is generated without manual Pokémon entry  
-- Users can correct errors without blocking the flow  
+- Users can upload a supported save file and view all Pokémon  
+- A valid team recommendation is generated  
+- No manual Pokémon data entry is required  
+- The system architecture clearly supports future ML expansion  

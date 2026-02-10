@@ -1,88 +1,148 @@
-# Traceability Matrix (MVP) — Gen 3 PC Team Assistant
+# Traceability Matrix — Generation 3 Pokémon AI Team Assistant (MVP)
 
-## Legend
-- **Owner:** FE, BE, IMG, DET, ID, REC, EXP, OBS, QA
-- **Test Types:** UNIT, INT, E2E, VAL, GOLD, LOAD, SEC
-- **Evidence:** CI artifacts (JUnit/XML, JSON metrics, screenshots, videos)
+## Purpose
+This matrix maps Software Requirements Specification (SRS) requirements to:
+- Owning subsystem
+- Verification method
+- CI test identifiers
+- Evidence artifacts
 
----
-
-## 5.1 Image Input & Session Management
-
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-IMG-001 | FE/BE | E2E | T-IMG-REQ-IMG-001-E2E-01 | Upload ≥2 images; both in session | Playwright video/log + API traces |
-| REQ-IMG-002 | BE | INT | T-IMG-REQ-IMG-002-INT-01 | Unified pool contains all images’ mons | Backend report + pool JSON snapshot |
-| REQ-IMG-003 | FE/BE | E2E/UNIT | T-IMG-REQ-IMG-003-E2E-01, T-IMG-REQ-IMG-003-UNIT-01 | Accept PNG/JPG/JPEG; HEIC if provided; reject others | CI logs + UI screenshots |
-| REQ-IMG-004 | IMG/DET/ID | VAL | T-IMG-REQ-IMG-004-VAL-01 | Meets accuracy on screenshot+photo subsets | benchmarks/accuracy_by_subset.json |
-| REQ-IMG-005 | IMG | UNIT/GOLD | T-IMG-REQ-IMG-005-UNIT-01, T-IMG-REQ-IMG-005-GOLD-01 | Orientation normalized; crops match canonical | Golden diffs + crop outputs |
+It ensures all SHALL/MUST requirements are:
+- Implemented
+- Tested
+- Measurable
+- Auditable
 
 ---
 
-## 5.2 PC Layout Detection & Slot Extraction
+## Subsystem Legend
 
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-PC-001 | DET | VAL | T-PC-REQ-PC-001-VAL-01 | ≥99% grid detection or defined fallback | benchmarks/grid_detection.json |
-| REQ-PC-002 | DET | VAL | T-PC-REQ-PC-002-VAL-01 | ≥98% occupancy accuracy | benchmarks/occupancy.json |
-| REQ-PC-003 | DET | GOLD/VAL | T-PC-REQ-PC-003-GOLD-01, T-PC-REQ-PC-003-VAL-01 | Crop IoU ≥0.9 avg | IoU JSON + overlay images |
-| REQ-PC-004 | DET/ID | VAL | T-PC-REQ-PC-004-VAL-01 | Still meets Top-3 target with artifacts | delta report + samples |
-
----
-
-## 5.3 Pokémon Identification
-
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-ID-001 | ID | VAL | T-ID-REQ-ID-001-VAL-01 | Report Top-1/Top-3; Top-3 meets target | benchmarks/id_accuracy.json |
-| REQ-ID-002 | ID/BE | UNIT | T-ID-REQ-ID-002-UNIT-01 | Always returns Top-3 + confidence format | Unit report + sample JSON |
-| REQ-ID-003 | ID/QA | VAL (Acceptance) | T-ID-REQ-ID-003-VAL-ACCEPT-01 | **Per-slot** Top-3 ≥95% on acceptance_v1 | acceptance_v1_metrics.json + run metadata |
-| REQ-ID-004 | DET/ID/BE | VAL | T-ID-REQ-ID-004-VAL-01 | Eggs excluded from pool/UI | egg_filter.json + UI snapshot |
-| REQ-ID-005 | ID | VAL | T-ID-REQ-ID-005-VAL-01 | Shiny treated as normal | subset metrics report |
-| REQ-ID-006 | ID | UNIT | T-ID-REQ-ID-006-UNIT-01 | All Unown forms -> Unown | Unit report |
-| REQ-ID-007 | BE | INT | T-ID-REQ-ID-007-INT-01 | Duplicates preserved as instances | pool snapshot JSON |
+| Code | Subsystem |
+|------|---------|
+| FE | Angular Frontend |
+| BE | Flask Backend |
+| SES | Session Management |
+| SAVE | Save File Ingestion |
+| PARSE | Save Parsing Engine |
+| INV | Pokémon Inventory UI |
+| REC | Team Recommendation Engine |
+| EXP | Explanation Generator |
+| OBS | Observability / Logging / Privacy |
+| QA | Test Harness / CI |
 
 ---
 
-## 5.4 User Confirmation & Correction
+## Test Type Legend
 
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-UC-001 | FE/BE | E2E | T-UC-REQ-UC-001-E2E-01 | Review screen shown pre-recommendation | Playwright evidence |
-| REQ-UC-002 | FE/BE | E2E | T-UC-REQ-UC-002-E2E-01 | Correction works; skip path works | API trace + screenshots |
-| REQ-UC-003 | BE/FE | INT/E2E | T-UC-REQ-UC-003-INT-01, T-UC-REQ-UC-003-E2E-01 | Recommendation blocked until confirmed | response assertions + UI state |
-| REQ-UC-004 | OBS/BE | INT/SEC | T-UC-REQ-UC-004-INT-01 | If enabled, logs w/o raw image retention | event logs + privacy audit |
+| Code | Meaning |
+|------|--------|
+| UNIT | Unit Test |
+| INT | Integration Test |
+| E2E | End-to-End Test |
+| VAL | Validation Dataset Test |
+| SEC | Security / Privacy Test |
+| LOAD | Performance / Load Test |
+| GOLD | Golden Output Comparison |
+
+---
+
+## 5.1 Session Management
+
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-SES-001 | SES/BE | INT | T-SES-001-INT-01 | Session created with valid ID | API response JSON |
+| REQ-SES-002 | SES/BE | INT | T-SES-002-INT-01 | Uploaded artifacts linked to session | Session state snapshot |
+| REQ-SES-003 | SES/OBS | SEC/INT | T-SES-003-SEC-01 | Expired sessions removed | TTL audit log |
+
+---
+
+## 5.2 Save File Input
+
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-SAVE-001 | SAVE/BE | E2E | T-SAVE-001-E2E-01 | Save file accepted and stored | Upload logs |
+| REQ-SAVE-002 | SAVE/BE | UNIT | T-SAVE-002-UNIT-01 | `.sav` and `.dsv` accepted | Unit report |
+| REQ-SAVE-003 | SAVE/BE | UNIT | T-SAVE-003-UNIT-01 | Corrupt saves rejected gracefully | Error response snapshot |
+
+---
+
+## 5.3 Save Parsing & Pokémon Extraction
+
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-PARSE-001 | PARSE | VAL | T-PARSE-001-VAL-01 | All party + PC Pokémon extracted | Fixture comparison JSON |
+| REQ-PARSE-002 | PARSE | UNIT | T-PARSE-002-UNIT-01 | Species/Level/Types present | Unit output JSON |
+| REQ-PARSE-003 | PARSE | UNIT | T-PARSE-003-UNIT-01 | Optional data parsed when available | Fixture diff |
+| REQ-PARSE-004 | PARSE | UNIT | T-PARSE-004-UNIT-01 | Eggs excluded if enabled | Extraction log |
+
+---
+
+## 5.4 Pokémon Inventory Review
+
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-INV-001 | FE | E2E | T-INV-001-E2E-01 | Pokémon list displayed | UI screenshot |
+| REQ-INV-002 | FE/BE | E2E | T-INV-002-E2E-01 | Exclusion toggle works | UI + API trace |
+| REQ-INV-003 | BE | INT | T-INV-003-INT-01 | Duplicate Pokémon preserved | Inventory JSON |
 
 ---
 
 ## 5.5 Team Recommendation Engine
 
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-TEAM-001 | REC/BE | E2E | T-TEAM-REQ-TEAM-001-E2E-01 | One team returned | response snapshot |
-| REQ-TEAM-002 | REC | UNIT | T-TEAM-REQ-TEAM-002-UNIT-01 | Size == min(6, pool size) | unit report |
-| REQ-TEAM-003 | BE/REC | INT | T-TEAM-REQ-TEAM-003-INT-01 | Unconfirmed excluded | fixture + output JSON |
-| REQ-TEAM-004 | REC | UNIT/GOLD | T-TEAM-REQ-TEAM-004-UNIT-01, T-TEAM-REQ-TEAM-004-GOLD-01 | Fixtures yield expected ordering | golden diffs |
-| REQ-TEAM-005 | REC/BE | SEC | T-TEAM-REQ-TEAM-005-SEC-01 | No IV/EV/meta endpoints/features | API contract + static checks |
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-TEAM-001 | REC | E2E | T-TEAM-001-E2E-01 | Exactly one team returned | Response JSON |
+| REQ-TEAM-002 | REC | UNIT | T-TEAM-002-UNIT-01 | Team size = min(6, pool size) | Unit report |
+| REQ-TEAM-003 | REC | INT | T-TEAM-003-INT-01 | Only eligible Pokémon selected | Fixture diff |
+| REQ-TEAM-004 | REC | GOLD | T-TEAM-004-GOLD-01 | Known fixture yields expected team | Golden output |
+| REQ-TEAM-005 | REC | SEC | T-TEAM-005-SEC-01 | No IV/EV/meta logic present | Static scan log |
 
 ---
 
 ## 5.6 Recommendation Explanation
 
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-EXP-001 | EXP/BE | E2E | T-EXP-REQ-EXP-001-E2E-01 | Explanation included | response snapshot |
-| REQ-EXP-002 | EXP | GOLD | T-EXP-REQ-EXP-002-GOLD-01 | Mentions coverage + balance | golden text diffs |
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-EXP-001 | EXP | E2E | T-EXP-001-E2E-01 | Explanation returned | Response JSON |
+| REQ-EXP-002 | EXP | GOLD | T-EXP-002-GOLD-01 | Explanation mentions coverage & balance | Golden text diff |
 
 ---
 
 ## 6. Non-Functional Requirements
 
-| Requirement | Owner | Verification | Test ID(s) | Pass/Fail | Evidence |
-|---|---|---|---|---|---|
-| REQ-PERF-001 | BE/DET/ID | LOAD | T-PERF-REQ-PERF-001-LOAD-01 | p95 ≤5s nominal load | load report + latency JSON |
-| REQ-PERF-002 | DET/ID | VAL | T-PERF-REQ-PERF-002-VAL-01 | Top-3 drop ≤5% abs on degraded set | robustness delta report |
-| REQ-REL-001 | BE | INT/E2E | T-REL-REQ-REL-001-INT-01, T-REL-REQ-REL-001-E2E-01 | One image fails; session still works | session audit JSON |
-| REQ-REL-002 | FE/BE | E2E | T-REL-REQ-REL-002-E2E-01 | Low confidence prompts user | UI screenshots + logs |
-| REQ-PRIV-001 | BE/OBS | SEC | T-PRIV-REQ-PRIV-001-SEC-01 | TTL deletion verified | storage audit logs |
-| REQ-PRIV-002 | FE/BE | E2E | T-PRIV-REQ-PRIV-002-E2E-01 | No auth required | E2E logs |
+| Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
+|------------|------|-------------|--------|--------------|---------|
+| REQ-PERF-001 | BE/REC | LOAD | T-PERF-001-LOAD-01 | p95 ≤ 5s | Load report JSON |
+| REQ-REL-001 | BE | E2E | T-REL-001-E2E-01 | Invalid save handled gracefully | Error UI screenshot |
+| REQ-PRIV-001 | OBS | SEC | T-PRIV-001-SEC-01 | Save deleted after TTL | Storage audit |
+| REQ-PRIV-002 | BE | E2E | T-PRIV-002-E2E-01 | No login required | CI E2E log |
+
+---
+
+## 7. Machine Learning (Future Scope — Not MVP Gating)
+
+| Requirement | Owner | Verification | Test ID | Evidence |
+|------------|------|-------------|--------|---------|
+| REQ-ML-001 | ML | VAL | T-ML-001-VAL-01 | Acceptance dataset metrics |
+| REQ-ML-002 | ML | VAL | T-ML-002-VAL-01 | Ranking accuracy report |
+| REQ-ML-003 | ML/BE | INT | T-ML-003-INT-01 | Deployment logs |
+| REQ-ML-004 | QA | VAL | T-ML-004-VAL-01 | CI benchmark artifact |
+
+---
+
+## Evidence Artifact Locations (Suggested)
+/artifacts/
+benchmarks/
+golden/
+load/
+logs/
+screenshots/
+
+---
+
+## Notes
+
+- ML requirements are **non-blocking for MVP completion**
+- All Test IDs are CI-friendly and map 1:1 to automation jobs
+- Golden outputs SHOULD be versioned
+- Acceptance datasets SHALL be immutable per version
