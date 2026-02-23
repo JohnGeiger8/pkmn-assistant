@@ -20,6 +20,11 @@ Start the API:
 python wsgi.py
 ```
 
+Run backend tests from the repo root:
+```bash
+pytest backend/tests
+```
+
 Health check:
 ```bash
 curl http://localhost:5000/api/health
