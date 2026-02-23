@@ -50,9 +50,9 @@ It ensures all SHALL/MUST requirements are:
 
 | Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
 |------------|------|-------------|--------|--------------|---------|
-| REQ-SES-001 | SES/BE | INT | T-SES-001-INT-01 | Session created with valid ID | API response JSON |
-| REQ-SES-002 | SES/BE | INT | T-SES-002-INT-01 | Uploaded artifacts linked to session | Session state snapshot |
-| REQ-SES-003 | SES/OBS | SEC/INT | T-SES-003-SEC-01 | Expired sessions removed | TTL audit log |
+| REQ-SES-001 | SES/BE | INT | T-SES-001-INT-01 | Session created with valid ID | `backend/tests/test_sessions.py::test_create_session` |
+| REQ-SES-002 | SES/BE | INT | T-SES-002-INT-01 | Uploaded artifacts linked to session | Pending save upload tests |
+| REQ-SES-003 | SES/OBS | SEC/INT | T-SES-003-SEC-01 | Expired sessions removed | `backend/tests/test_sessions.py::test_get_session_expired` |
 
 ---
 
