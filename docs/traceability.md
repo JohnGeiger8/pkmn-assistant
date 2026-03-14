@@ -51,7 +51,7 @@ It ensures all SHALL/MUST requirements are:
 | Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
 |------------|------|-------------|--------|--------------|---------|
 | REQ-SES-001 | SES/BE | INT | T-SES-001-INT-01 | Session created with valid ID | `backend/tests/test_sessions.py::test_create_session` |
-| REQ-SES-002 | SES/BE | INT | T-SES-002-INT-01 | Uploaded artifacts linked to session | Pending save upload tests |
+| REQ-SES-002 | SES/BE | INT | T-SES-002-INT-01 | Uploaded artifacts linked to session | `backend/tests/test_sessions.py::test_upload_save_success` |
 | REQ-SES-003 | SES/OBS | SEC/INT | T-SES-003-SEC-01 | Expired sessions removed | `backend/tests/test_sessions.py::test_get_session_expired` |
 
 ---
@@ -60,9 +60,9 @@ It ensures all SHALL/MUST requirements are:
 
 | Requirement | Owner | Verification | Test ID | Pass Criteria | Evidence |
 |------------|------|-------------|--------|--------------|---------|
-| REQ-SAVE-001 | SAVE/BE | E2E | T-SAVE-001-E2E-01 | Save file accepted and stored | Upload logs |
-| REQ-SAVE-002 | SAVE/BE | UNIT | T-SAVE-002-UNIT-01 | `.sav` and `.dsv` accepted | Unit report |
-| REQ-SAVE-003 | SAVE/BE | UNIT | T-SAVE-003-UNIT-01 | Corrupt saves rejected gracefully | Error response snapshot |
+| REQ-SAVE-001 | SAVE/BE | INT | T-SAVE-001-INT-01 | Save file accepted and stored | `backend/tests/test_sessions.py::test_upload_save_success` |
+| REQ-SAVE-002 | SAVE/BE | UNIT | T-SAVE-002-UNIT-01 | `.sav` and `.dsv` accepted | `backend/tests/test_sessions.py::test_upload_save_success` |
+| REQ-SAVE-003 | SAVE/BE | UNIT | T-SAVE-003-UNIT-01 | Corrupt saves rejected gracefully | `backend/tests/test_sessions.py::test_upload_save_empty_file` |
 
 ---
 

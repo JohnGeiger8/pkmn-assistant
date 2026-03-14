@@ -14,3 +14,13 @@
 **Decision:** Uploads stored in S3-compatible object storage with TTL cleanup.
 **Why:** Production-like; simple scaling.
 **Implications:** Need local dev (MinIO) and TTL deletion strategy.
+
+## D-004: Local object storage via MinIO in docker-compose
+**Decision:** Use MinIO services in docker-compose for local S3-compatible upload testing.
+**Why:** Enables realistic upload behavior without AWS dependencies.
+**Implications:** Requires stable MinIO image tags, bucket bootstrap, and env vars (`S3_*`) aligned between backend and compose.
+
+## D-005: Upload metadata handling for stream safety
+**Decision:** Compute uploaded file size in route before transfer; storage helper performs upload only.
+**Why:** Transfer layer may close request stream, making post-upload stream reads unsafe.
+**Implications:** Keep request-derived metadata (like size) in route/service layer before storage call.
